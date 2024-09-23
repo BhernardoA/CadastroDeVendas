@@ -4,10 +4,5 @@
  */
 package dominio;
 
-/**
- *
- * @author marco
- */
-public class Cliente {
-    
+public class Cliente extends Pessoa {
 }
