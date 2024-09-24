@@ -6,10 +6,10 @@ package dominio;
 
 public class Vendas {
     
-    private int data;
-    private int material;
-    private int quantidade;
-    private int preco;
+    public int data;
+    public int material;
+    public int quantidade;
+    public int preco;
     
     public Vendas() {
     }
