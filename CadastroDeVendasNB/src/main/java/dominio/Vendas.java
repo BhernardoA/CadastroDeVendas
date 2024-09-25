@@ -7,14 +7,14 @@ package dominio;
 public class Vendas {
     
     public int data;
-    public int material;
-    public int quantidade;
-    public int preco;
+    public String material;
+    public double quantidade;
+    public double preco;
     
     public Vendas() {
     }
     
-    public Vendas(int data, int material, int quantidade, int preco) {
+    public Vendas(int data, String material, double quantidade, double preco) {
         
         this.data = data;
         this.material = material;
@@ -31,27 +31,27 @@ public class Vendas {
         this.data = data;
     }
 
-    public int getMaterial() {
+    public String getMaterial() {
         return material;
     }
 
-    public void setMaterial(int material) {
+    public void setMaterial(String material) {
         this.material = material;
     }
 
-    public int getQuantidade() {
+    public double getQuantidade() {
         return quantidade;
     }
 
-    public void setQuantidade(int quantidade) {
+    public void setQuantidade(double quantidade) {
         this.quantidade = quantidade;
     }
 
-    public int getPreco() {
+    public double getPreco() {
         return preco;
     }
 
-    public void setPreco(int preco) {
+    public void setPreco(double preco) {
         this.preco = preco;
     }
     

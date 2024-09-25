@@ -6,10 +6,10 @@ package dominio;
 
 public class Pessoa {
     
-    private String nome;
-    private int cpf;
-    private int telefone;
-    private String email;
+    public String nome;
+    public int cpf;
+    public int telefone;
+    public String email;
     
     public Pessoa() {
     }
@@ -53,5 +53,6 @@ public class Pessoa {
     public void setEmail(String email) {
         this.email = email;
     }
+    
     
 }
