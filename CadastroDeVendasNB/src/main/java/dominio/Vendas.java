@@ -5,7 +5,7 @@
 package dominio;
 
 public class Vendas {
-    
+   
     public int data;
     public String material;
     public double quantidade;
