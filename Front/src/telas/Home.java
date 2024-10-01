@@ -16,19 +16,14 @@ public class Home extends javax.swing.JFrame {
     public Home() {
         initComponents();
         
-        //setExtendedState(MAXIMIZED_BOTH);
-        
-        //jBCadastrarVenda.setVisible(false);  
         jBCadastrarVenda.setOpaque(false);   
         jBCadastrarVenda.setContentAreaFilled(false);
         jBCadastrarVenda.setBorderPainted(false);
-        
-        //jBCadastrarCliente.setVisible(false);  
+         
         jBCadastrarCliente.setOpaque(false);    
         jBCadastrarCliente.setContentAreaFilled(false);
         jBCadastrarCliente.setBorderPainted(false);
-        
-        //jBListaDeVendas.setVisible(false);  
+          
         jBListaDeVendas.setOpaque(false);  
         jBListaDeVendas.setContentAreaFilled(false);
         jBListaDeVendas.setBorderPainted(false);
@@ -58,23 +53,23 @@ public class Home extends javax.swing.JFrame {
                 jBCadastrarVendaActionPerformed(evt);
             }
         });
-        getContentPane().add(jBCadastrarVenda, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 60, 150, 60));
+        getContentPane().add(jBCadastrarVenda, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 400, 260, 80));
 
         jBCadastrarCliente.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jBCadastrarClienteActionPerformed(evt);
             }
         });
-        getContentPane().add(jBCadastrarCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 60, 160, 60));
+        getContentPane().add(jBCadastrarCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 520, 260, 80));
 
         jBListaDeVendas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jBListaDeVendasActionPerformed(evt);
             }
         });
-        getContentPane().add(jBListaDeVendas, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 60, 130, 60));
+        getContentPane().add(jBListaDeVendas, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 640, 250, 80));
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/Dark Blue and Purple Modern Marketing Blog Desktop Prototype.png"))); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/Tela Principal1.png"))); // NOI18N
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         pack();

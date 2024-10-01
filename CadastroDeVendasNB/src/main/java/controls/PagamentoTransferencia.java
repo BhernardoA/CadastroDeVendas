@@ -10,4 +10,14 @@ package controls;
  */
 public class PagamentoTransferencia {
     
+    public PagamentoTransferencia(double valor) {
+        super(valor);
+    }
+
+    @Override
+    public String tipoPagamento() {
+        return "Transferência";
+    }
+
+    
 }
