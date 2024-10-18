@@ -35,6 +35,7 @@ public class TelaCadastrarCliente extends javax.swing.JFrame {
         jFormattedTextField6 = new javax.swing.JFormattedTextField();
         jTextField1 = new javax.swing.JTextField();
         jTextField2 = new javax.swing.JTextField();
+        jFormattedTextField5 = new javax.swing.JFormattedTextField();
         jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -48,7 +49,7 @@ public class TelaCadastrarCliente extends javax.swing.JFrame {
                 jBSalvarActionPerformed(evt);
             }
         });
-        getContentPane().add(jBSalvar, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 440, 250, 80));
+        getContentPane().add(jBSalvar, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 480, 240, 80));
 
         try {
             jFormattedTextField6.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("###.###.###-##")));
@@ -61,15 +62,28 @@ public class TelaCadastrarCliente extends javax.swing.JFrame {
                 jFormattedTextField6ActionPerformed(evt);
             }
         });
-        getContentPane().add(jFormattedTextField6, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 340, 150, 40));
+        getContentPane().add(jFormattedTextField6, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 400, 150, 40));
 
         jTextField1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        getContentPane().add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 180, 330, 40));
+        getContentPane().add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 150, 330, 40));
 
         jTextField2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        getContentPane().add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 260, 330, 40));
+        getContentPane().add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 230, 330, 40));
 
-        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/Cadastro De Cliente1.png"))); // NOI18N
+        try {
+            jFormattedTextField5.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("(##)#####-####")));
+        } catch (java.text.ParseException ex) {
+            ex.printStackTrace();
+        }
+        jFormattedTextField5.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jFormattedTextField5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jFormattedTextField5ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jFormattedTextField5, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 310, 150, 40));
+
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/Tela Cadastrar Cliente1.png"))); // NOI18N
         getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1090, 580));
 
         pack();
@@ -83,6 +97,10 @@ public class TelaCadastrarCliente extends javax.swing.JFrame {
     private void jFormattedTextField6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jFormattedTextField6ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jFormattedTextField6ActionPerformed
+
+    private void jFormattedTextField5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jFormattedTextField5ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jFormattedTextField5ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -121,6 +139,7 @@ public class TelaCadastrarCliente extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jBSalvar;
+    private javax.swing.JFormattedTextField jFormattedTextField5;
     private javax.swing.JFormattedTextField jFormattedTextField6;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JTextField jTextField1;

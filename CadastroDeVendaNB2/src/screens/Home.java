@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package telas;
+package screens;
 
 /**
  *
@@ -45,12 +45,12 @@ public class Home extends javax.swing.JFrame {
 
         jBCadastrarVenda = new javax.swing.JButton();
         jBCadastrarCliente = new javax.swing.JButton();
-        jBListaDeVendas = new javax.swing.JButton();
         jBListaDeClientes = new javax.swing.JButton();
+        jBListaDeVendas = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("HOME");
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Tela Principal");
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -59,30 +59,30 @@ public class Home extends javax.swing.JFrame {
                 jBCadastrarVendaActionPerformed(evt);
             }
         });
-        getContentPane().add(jBCadastrarVenda, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 400, 260, 80));
+        getContentPane().add(jBCadastrarVenda, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 400, 270, 80));
 
         jBCadastrarCliente.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jBCadastrarClienteActionPerformed(evt);
             }
         });
-        getContentPane().add(jBCadastrarCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 510, 260, 80));
-
-        jBListaDeVendas.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jBListaDeVendasActionPerformed(evt);
-            }
-        });
-        getContentPane().add(jBListaDeVendas, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 630, 250, 80));
+        getContentPane().add(jBCadastrarCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 517, 260, 80));
 
         jBListaDeClientes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jBListaDeClientesActionPerformed(evt);
             }
         });
-        getContentPane().add(jBListaDeClientes, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 630, 250, 80));
+        getContentPane().add(jBListaDeClientes, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 630, 260, 80));
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/telas/Tela Principal1.png"))); // NOI18N
+        jBListaDeVendas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBListaDeVendasActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jBListaDeVendas, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 627, 260, 80));
+
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Tela Principal1.png"))); // NOI18N
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         pack();
@@ -90,36 +90,32 @@ public class Home extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jBCadastrarVendaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBCadastrarVendaActionPerformed
-        // TODO add your handling code here: 
-        
+
         TelaCadastrarVenda botaotela1 = new TelaCadastrarVenda();
         botaotela1.setVisible(true);
         
     }//GEN-LAST:event_jBCadastrarVendaActionPerformed
 
     private void jBCadastrarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBCadastrarClienteActionPerformed
-        // TODO add your handling code here:
         
         TelaCadastrarCliente botaotela2 = new TelaCadastrarCliente();
         botaotela2.setVisible(true);
         
     }//GEN-LAST:event_jBCadastrarClienteActionPerformed
 
-    private void jBListaDeVendasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBListaDeVendasActionPerformed
-        // TODO add your handling code here:
-        
-        TelaDeListaDeVendas botaotela3 = new TelaDeListaDeVendas();
-        botaotela3.setVisible(true);
-        
-    }//GEN-LAST:event_jBListaDeVendasActionPerformed
-
     private void jBListaDeClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBListaDeClientesActionPerformed
-        // TODO add your handling code here:
         
         TelaListaDeClientes botaotela4 = new TelaListaDeClientes();
         botaotela4.setVisible(true);
         
     }//GEN-LAST:event_jBListaDeClientesActionPerformed
+
+    private void jBListaDeVendasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBListaDeVendasActionPerformed
+        
+        TelaDeListaDeVendas botaotela3 = new TelaDeListaDeVendas();
+        botaotela3.setVisible(true);
+        
+    }//GEN-LAST:event_jBListaDeVendasActionPerformed
 
     /**
      * @param args the command line arguments
@@ -132,7 +128,7 @@ public class Home extends javax.swing.JFrame {
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Windows".equals(info.getName())) {
+                if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
