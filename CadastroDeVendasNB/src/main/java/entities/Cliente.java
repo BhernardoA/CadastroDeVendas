@@ -2,22 +2,15 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package controls;
+package entities;
 
 /**
  *
  * @author marco
  */
-public class PagamentoTransferencia {
+public class Cliente extends Pessoa {
     
-    public PagamentoTransferencia(double valor) {
-        super(valor);
+    public Cliente(String nome, String email, String celular, String cpf, String dataCadastro) {
+        super(nome, email, celular, cpf, dataCadastro);
     }
-
-    @Override
-    public String tipoPagamento() {
-        return "Transferência";
-    }
-
-    
 }
