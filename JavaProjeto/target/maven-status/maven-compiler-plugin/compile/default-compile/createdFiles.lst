@@ -3,6 +3,7 @@ GUI\ClienteApp$HomeActionListener.class
 Classes\PagamentoCartao.class
 Enums\TipoPagamento.class
 GUI\ClienteApp$CadastrarActionListener.class
+DAO\VendaDAO.class
 GUI\ClienteApp$ClienteTableMouseListener.class
 Classes\PagamentoDinheiro.class
 GUI\ClienteApp$ListarActionListener.class
@@ -21,5 +22,7 @@ GUI\VendaApp.class
 GUI\Home$2.class
 Classes\Pessoa.class
 Classes\Cliente.class
+DAO\ClienteDAO.class
 Enums\Parcelas.class
 Classes\Pagamento.class
+SQL\ConexaoSQL.class

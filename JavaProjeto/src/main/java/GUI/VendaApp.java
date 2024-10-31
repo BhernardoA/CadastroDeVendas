@@ -7,6 +7,7 @@ import Classes.Venda;
 import Enums.TipoPagamento;
 import Enums.Unidade;
 import Enums.Parcelas;
+import DAO.VendaDAO;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -27,11 +28,13 @@ public class VendaApp extends JFrame {
     private JComboBox<Parcelas> cbParcelas;
     private JComboBox<Unidade> cbUnidade;
     private JTable tabelaVendas;
+    private JFormattedTextField txtDataFiltro; 
 
     public VendaApp(ClienteControle clienteControle) {
         this.clienteControle = clienteControle;
-        this.vendaControle = new VendaControle(clienteControle);
-        
+        VendaDAO vendaDAO = new VendaDAO();
+        this.vendaControle = new VendaControle(clienteControle, vendaDAO);
+
         setTitle("Cadastro de Vendas");
         setSize(800, 600);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -44,8 +47,7 @@ public class VendaApp extends JFrame {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JPanel painelCliente = criarPainelCliente(gbc, painelFormulario);
-
+        criarPainelCliente(gbc, painelFormulario);
         JButton btnBuscarCliente = new JButton("Buscar Cliente");
         btnBuscarCliente.addActionListener(e -> buscarCliente());
         gbc.gridwidth = 1;
@@ -53,8 +55,7 @@ public class VendaApp extends JFrame {
         gbc.gridy = 1;
         painelFormulario.add(btnBuscarCliente, gbc);
 
-        JPanel painelVenda = criarPainelVenda(gbc, painelFormulario);
-
+        criarPainelVenda(gbc, painelFormulario);
         JButton btnCadastrar = new JButton("Cadastrar");
         btnCadastrar.addActionListener(e -> cadastrarVenda());
         gbc.gridwidth = 1;
@@ -62,15 +63,14 @@ public class VendaApp extends JFrame {
         gbc.gridy = 3;
         painelFormulario.add(btnCadastrar, gbc);
 
+        
+        criarPainelFiltro(gbc, painelFormulario);
+
         tabelaVendas = new JTable();
         atualizarTabela();
         add(new JScrollPane(tabelaVendas), BorderLayout.CENTER);
 
         JPanel painelAcoes = new JPanel();
-        JButton btnFiltrar = new JButton("Filtrar por Data");
-        btnFiltrar.addActionListener(e -> filtrarVendasPorData());
-        painelAcoes.add(btnFiltrar);
-
         JButton btnRemover = new JButton("Remover");
         btnRemover.addActionListener(e -> removerVenda());
         painelAcoes.add(btnRemover);
@@ -86,7 +86,7 @@ public class VendaApp extends JFrame {
         add(painelAcoes, BorderLayout.SOUTH);
     }
 
-    private JPanel criarPainelCliente(GridBagConstraints gbc, JPanel painelFormulario) {
+    private void criarPainelCliente(GridBagConstraints gbc, JPanel painelFormulario) {
         JPanel painelCliente = new JPanel();
         painelCliente.setBorder(BorderFactory.createTitledBorder("Dados do Cliente"));
         painelCliente.setLayout(new GridLayout(5, 2, 5, 5));
@@ -119,11 +119,9 @@ public class VendaApp extends JFrame {
         gbc.gridy = 0;
         gbc.gridwidth = 2;
         painelFormulario.add(painelCliente, gbc);
-
-        return painelCliente;
     }
 
-    private JPanel criarPainelVenda(GridBagConstraints gbc, JPanel painelFormulario) {
+    private void criarPainelVenda(GridBagConstraints gbc, JPanel painelFormulario) {
         JPanel painelVenda = new JPanel();
         painelVenda.setBorder(BorderFactory.createTitledBorder("Dados da Venda"));
         painelVenda.setLayout(new GridLayout(7, 2, 5, 5));
@@ -162,8 +160,25 @@ public class VendaApp extends JFrame {
         gbc.gridy = 2;
         gbc.gridwidth = 2;
         painelFormulario.add(painelVenda, gbc);
+    }
 
-        return painelVenda;
+    private void criarPainelFiltro(GridBagConstraints gbc, JPanel painelFormulario) {
+        JPanel painelFiltro = new JPanel();
+        painelFiltro.setBorder(BorderFactory.createTitledBorder("Filtro por Data"));
+        painelFiltro.setLayout(new FlowLayout());
+
+        painelFiltro.add(new JLabel("Data:"));
+        txtDataFiltro = criarCampoDataVenda();
+        painelFiltro.add(txtDataFiltro);
+
+        JButton btnFiltrar = new JButton("Filtrar");
+        btnFiltrar.addActionListener(e -> filtrarVendasPorData());
+        painelFiltro.add(btnFiltrar);
+
+        gbc.gridx = 0;
+        gbc.gridy = 4; 
+        gbc.gridwidth = 2;
+        painelFormulario.add(painelFiltro, gbc);
     }
 
     private JFormattedTextField criarCampoDataVenda() {
@@ -227,6 +242,8 @@ public class VendaApp extends JFrame {
             } else {
                 JOptionPane.showMessageDialog(this, "Cliente não encontrado!", "Erro", JOptionPane.ERROR_MESSAGE);
             }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Erro: Verifique se todos os campos numéricos estão preenchidos corretamente.", "Erro", JOptionPane.ERROR_MESSAGE);
         } catch (IllegalArgumentException e) {
             JOptionPane.showMessageDialog(this, "Erro: Unidade inválida!", "Erro", JOptionPane.ERROR_MESSAGE);
         } catch (Exception ex) {
@@ -245,47 +262,48 @@ public class VendaApp extends JFrame {
                 venda.getIdCliente(),
                 venda.getMaterial(),
                 venda.getQuantidade(),
-                venda.getUnidade(),
+                venda.getUnidade().getValor(), 
                 venda.getPreco(),
                 venda.getDataVenda(),
-                venda.getTipoPagamento(),
-                venda.getParcelas()
+                venda.getPagamento(),
+                venda.getParcelas() != null ? venda.getParcelas().getValor() : null 
             };
             modelo.addRow(linha);
         }
-
         tabelaVendas.setModel(modelo);
     }
 
     private void filtrarVendasPorData() {
-        String dataStr = JOptionPane.showInputDialog(this, "Informe a data (dd/MM/yyyy) para filtrar:");
-        if (dataStr != null) {
-            try {
-                LocalDate dataFiltro = LocalDate.parse(dataStr, java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                List<Venda> vendasFiltradas = vendaControle.filtrarVendasPorData(dataFiltro);
-                String[] colunas = {"ID", "ID Cliente", "Material", "Quantidade", "Unidade", "Preço", "Data", "Pagamento", "Parcelas"};
-                DefaultTableModel modelo = new DefaultTableModel(colunas, 0);
+        try {
+            String dataStr = txtDataFiltro.getText();
+            LocalDate dataFiltro = LocalDate.parse(dataStr, java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
-                for (Venda venda : vendasFiltradas) {
-                    Object[] linha = {
-                        venda.getId(),
-                        venda.getIdCliente(),
-                        venda.getMaterial(),
-                        venda.getQuantidade(),
-                        venda.getUnidade(),
-                        venda.getPreco(),
-                        venda.getDataVenda(),
-                        venda.getTipoPagamento(),
-                        venda.getParcelas()
-                    };
-                    modelo.addRow(linha);
-                }
-
-                tabelaVendas.setModel(modelo);
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Data inválida!", "Erro", JOptionPane.ERROR_MESSAGE);
-            }
+            List<Venda> vendasFiltradas = vendaControle.filtrarVendasPorData(dataFiltro);
+            atualizarTabelaComVendasFiltradas(vendasFiltradas);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao filtrar vendas: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void atualizarTabelaComVendasFiltradas(List<Venda> vendasFiltradas) {
+        String[] colunas = {"ID", "ID Cliente", "Material", "Quantidade", "Unidade", "Preço", "Data", "Pagamento", "Parcelas"};
+        DefaultTableModel modelo = new DefaultTableModel(colunas, 0);
+
+        for (Venda venda : vendasFiltradas) {
+            Object[] linha = {
+                venda.getId(),
+                venda.getIdCliente(),
+                venda.getMaterial(),
+                venda.getQuantidade(),
+                venda.getUnidade().getValor(), 
+                venda.getPreco(),
+                venda.getDataVenda(),
+                venda.getPagamento(),
+                venda.getParcelas() != null ? venda.getParcelas().getValor() : null 
+            };
+            modelo.addRow(linha);
+        }
+        tabelaVendas.setModel(modelo);
     }
 
     private void removerVenda() {
@@ -295,14 +313,7 @@ public class VendaApp extends JFrame {
             vendaControle.removerVenda(idVenda);
             atualizarTabela();
         } else {
-            JOptionPane.showMessageDialog(this, "Selecione uma venda para remover.", "Erro", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Selecione uma venda para remover!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            ClienteControle clienteControle = new ClienteControle();
-            new VendaApp(clienteControle).setVisible(true);
-        });
     }
 }

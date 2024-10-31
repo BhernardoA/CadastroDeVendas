@@ -1,14 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Enums;
-
-/**
- *
- * @author admin
- */
-public enum Unidade {
+    public enum Unidade {
     QUILOS("quilos"),
     TONELADAS("toneladas");
 
@@ -20,5 +11,14 @@ public enum Unidade {
 
     public String getValor() {
         return valor;
+    }
+
+    public static Unidade fromString(String valor) {
+        for (Unidade unidade : Unidade.values()) {
+            if (unidade.valor.equalsIgnoreCase(valor)) {
+                return unidade;
+            }
+        }
+        throw new IllegalArgumentException("Unidade inválida: " + valor);
     }
 }

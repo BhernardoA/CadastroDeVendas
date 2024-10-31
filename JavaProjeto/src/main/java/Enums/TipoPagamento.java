@@ -1,14 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Enums;
-
-/**
- *
- * @author admin
- */
-public enum TipoPagamento {
+    public enum TipoPagamento {
     DINHEIRO("dinheiro"),
     CARTAO("cartao"),
     TRANSFERENCIA("transferencia");
@@ -21,18 +12,14 @@ public enum TipoPagamento {
 
     public String getValor() {
         return valor;
-        
     }
 
-    public static TipoPagamento getDINHEIRO() {
-        return DINHEIRO;
+    public static TipoPagamento fromString(String valor) {
+        for (TipoPagamento tipo : TipoPagamento.values()) {
+            if (tipo.valor.equalsIgnoreCase(valor)) {
+                return tipo;
+            }
+        }
+        throw new IllegalArgumentException("Tipo de pagamento inválido: " + valor);
     }
-
-    public static TipoPagamento getCARTAO() {
-        return CARTAO;
-    }
-
-    public static TipoPagamento getTRANSFERENCIA() {
-        return TRANSFERENCIA;
-    }
-} 
+}

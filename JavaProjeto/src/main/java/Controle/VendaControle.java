@@ -2,21 +2,21 @@ package Controle;
 
 import Classes.Cliente;
 import Classes.Venda;
+import DAO.VendaDAO; // Importa a classe VendaDAO
 import Enums.Parcelas;
 import Enums.TipoPagamento;
 import Enums.Unidade;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 public class VendaControle {
-    private final List<Venda> vendas = new ArrayList<>();
-    private int proximoId = 1;
-    private final ClienteControle clienteControle; // Controle de clientes para buscar pelo ID
+    private final VendaDAO vendaDAO; 
+    private final ClienteControle clienteControle; 
 
-    // Construtor que recebe o controle de clientes
-    public VendaControle(ClienteControle clienteControle) {
+    // Construtor que recebe o controle de clientes e o DAO de vendas
+    public VendaControle(ClienteControle clienteControle, VendaDAO vendaDAO) {
         this.clienteControle = clienteControle;
+        this.vendaDAO = vendaDAO;
     }
 
     // Método para cadastrar uma venda usando o ID do cliente para preencher as informações do mesmo automaticamente
@@ -42,7 +42,7 @@ public class VendaControle {
                 throw new IllegalArgumentException("Erro: O preço não pode ser negativo.");
             }
 
-            Parcelas tipoParcelas = null; // Inicializa a variável
+            Parcelas tipoParcelas = null; 
 
             if (pagamento == TipoPagamento.CARTAO) {
                 if (parcelas == null || parcelas < 1 || parcelas > 12) {
@@ -55,10 +55,10 @@ public class VendaControle {
                 }
             }
 
-            // Cadastrar a nova venda
-            Venda novaVenda = new Venda(proximoId++, idCliente, dataVenda, material, quantidade, unidade, preco, pagamento, tipoParcelas);
-            vendas.add(novaVenda);
-            System.out.println("Venda cadastrada com sucesso! ID: " + novaVenda.getId());
+            // Cadastrar a nova venda usando o DAO
+            Venda novaVenda = new Venda(0, idCliente, dataVenda, material, quantidade, unidade, preco, pagamento, tipoParcelas);
+            vendaDAO.cadastrarVenda(novaVenda); // Chama o método do DAO
+            System.out.println("Venda cadastrada com sucesso!");
 
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
@@ -68,24 +68,13 @@ public class VendaControle {
     }
 
     // Método para remover uma venda
-    public boolean removerVenda(int idVenda) {  // Alterado para retornar boolean
+    public boolean removerVenda(int idVenda) {
         try {
-            Venda vendaSelecionada = vendas.stream()
-                    .filter(venda -> venda.getId() == idVenda)
-                    .findFirst()
-                    .orElse(null);
-
-            if (vendaSelecionada == null) {
-                throw new IllegalArgumentException("Erro: Nenhuma venda foi encontrada com o ID fornecido.");
-            }
-
-            vendas.remove(vendaSelecionada);
+            // Remove a venda usando o DAO
+            vendaDAO.removerVenda(idVenda);
             System.out.println("Venda removida com sucesso!");
             return true;  // Retorna true se a venda foi removida
 
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-            return false;  // Retorna false se ocorreu um erro
         } catch (Exception e) {
             System.out.println("Erro inesperado ao tentar remover a venda.");
             return false;  // Retorna false se ocorreu um erro
@@ -94,28 +83,20 @@ public class VendaControle {
 
     // Método para listar todas as vendas
     public List<Venda> listarVendas() {
-        return new ArrayList<>(vendas);
+        return vendaDAO.listarVendas(); // Chama o método do DAO
     }
 
     // Método para filtrar vendas por nome do material
     public List<Venda> filtrarVendasPorMaterial(String material) {
-        List<Venda> vendasFiltradas = new ArrayList<>();
-        for (Venda venda : vendas) {
-            if (venda.getMaterial().toLowerCase().contains(material.toLowerCase())) {
-                vendasFiltradas.add(venda);
-            }
-        }
+        List<Venda> vendasFiltradas = vendaDAO.listarVendas(); // Pega todas as vendas do banco
+        vendasFiltradas.removeIf(venda -> !venda.getMaterial().toLowerCase().contains(material.toLowerCase()));
         return vendasFiltradas;
     }
 
     // Método para filtrar vendas por ID do cliente
     public List<Venda> filtrarVendasPorIdCliente(int idCliente) {
-        List<Venda> vendasFiltradas = new ArrayList<>();
-        for (Venda venda : vendas) {
-            if (venda.getIdCliente() == idCliente) {
-                vendasFiltradas.add(venda);
-            }
-        }
+        List<Venda> vendasFiltradas = vendaDAO.listarVendas(); // Pega todas as vendas do banco
+        vendasFiltradas.removeIf(venda -> venda.getIdCliente() != idCliente);
         return vendasFiltradas;
     }
 
@@ -125,14 +106,9 @@ public class VendaControle {
     }
 
     // Método para filtrar vendas por data
-public List<Venda> filtrarVendasPorData(LocalDate dataFiltro) {
-    List<Venda> vendasFiltradas = new ArrayList<>();
-    for (Venda venda : vendas) {
-        if (venda.getDataVenda().isEqual(dataFiltro)) {
-            vendasFiltradas.add(venda);
-        }
+    public List<Venda> filtrarVendasPorData(LocalDate dataFiltro) {
+        List<Venda> vendasFiltradas = vendaDAO.listarVendas(); // Pega todas as vendas do banco
+        vendasFiltradas.removeIf(venda -> !venda.getDataVenda().isEqual(dataFiltro));
+        return vendasFiltradas;
     }
-    return vendasFiltradas;
-}
-
 }

@@ -14,5 +14,9 @@ public class Cliente extends Pessoa {
         super(id, nome, cpf, telefone, email);
     }
 
+    public void setId(int aInt) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
 
 }

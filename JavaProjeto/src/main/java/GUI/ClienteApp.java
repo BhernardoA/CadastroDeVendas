@@ -1,13 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package GUI;
-
-/**
- *
- * @author admin
- */
 
 import Controle.ClienteControle;
 import Classes.Cliente;
@@ -20,10 +11,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.ParseException;
-
 import javax.swing.SwingUtilities;
-
-import java.awt.event.MouseAdapter;
+import java.util.List;
 
 public class ClienteApp extends JFrame {
     private final ClienteControle clienteControle;
@@ -52,12 +41,12 @@ public class ClienteApp extends JFrame {
         inputPanel.add(nomeField);
 
         inputPanel.add(new JLabel("CPF:"));
-        cpfField = createCpfField(); // Cria o campo formatado para CPF
+        cpfField = createCpfField(); 
         cpfField.setFont(new Font("Verdana", Font.PLAIN, 12));
         inputPanel.add(cpfField);
 
         inputPanel.add(new JLabel("Telefone:"));
-        telefoneField = createTelefoneField(); // Cria o campo formatado para Telefone
+        telefoneField = createTelefoneField(); 
         telefoneField.setFont(new Font("Verdana", Font.PLAIN, 12));
         inputPanel.add(telefoneField);
 
@@ -71,12 +60,10 @@ public class ClienteApp extends JFrame {
         pesquisaField.setFont(new Font("Verdana", Font.PLAIN, 12));
         inputPanel.add(pesquisaField);
 
-        add(inputPanel, BorderLayout.NORTH); // Adiciona o painel de entrada ao topo
+        add(inputPanel, BorderLayout.NORTH); 
 
-        // Painel de Botões
         JPanel buttonPanel = new JPanel(new FlowLayout());
 
-        // Cria os botões e adiciona os listeners
         JButton homeButton = new JButton("Home");
         homeButton.addActionListener(new HomeActionListener());
         buttonPanel.add(homeButton);
@@ -101,18 +88,17 @@ public class ClienteApp extends JFrame {
         pesquisarButton.addActionListener(new PesquisarActionListener());
         buttonPanel.add(pesquisarButton);
 
-        add(buttonPanel, BorderLayout.CENTER); // Adiciona o painel de botões ao centro
+        add(buttonPanel, BorderLayout.CENTER); 
 
-        // Tabela para exibir os clientes
         tableModel = new DefaultTableModel(new Object[]{"ID", "Nome", "CPF", "Telefone", "Email"}, 0);
         clienteTable = new JTable(tableModel);
         clienteTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         clienteTable.addMouseListener(new ClienteTableMouseListener());
 
         JScrollPane scrollPane = new JScrollPane(clienteTable);
-        add(scrollPane, BorderLayout.SOUTH); // Adiciona a tabela ao fundo
+        add(scrollPane, BorderLayout.SOUTH); 
 
-        setVisible(true); // Torna a tela visível
+        setVisible(true); 
     }
 
     private JFormattedTextField createCpfField() {
@@ -138,7 +124,7 @@ public class ClienteApp extends JFrame {
     }
 
     private void atualizarTabela() {
-        tableModel.setRowCount(0); // Limpa a tabela antes de atualizar
+        tableModel.setRowCount(0); 
         for (Cliente cliente : clienteControle.listarClientes()) {
             tableModel.addRow(new Object[]{cliente.getId(), cliente.getNome(), cliente.getCpf(), cliente.getTelefone(), cliente.getEmail()});
         }
@@ -147,8 +133,8 @@ public class ClienteApp extends JFrame {
     private class HomeActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            new Home(); // Abre a tela inicial
-            dispose(); // Fecha a tela de gerenciamento de clientes
+            new Home(); 
+            dispose(); 
         }
     }
 
@@ -160,7 +146,6 @@ public class ClienteApp extends JFrame {
             String telefone = telefoneField.getText().trim();
             String email = emailField.getText().trim();
 
-            // Validações de campos obrigatórios
             if (nome.isEmpty()) {
                 JOptionPane.showMessageDialog(ClienteApp.this, "O Nome é obrigatório.", "Erro", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -187,7 +172,6 @@ public class ClienteApp extends JFrame {
                 }
             }
 
-            // Cadastra o cliente e atualiza a tabela
             clienteControle.cadastrarCliente(nome, cpf, telefone, email);
             atualizarTabela();
             limparCampos();
@@ -200,9 +184,9 @@ public class ClienteApp extends JFrame {
             int selectedRow = clienteTable.getSelectedRow();
             if (selectedRow != -1) {
                 int id = (int) tableModel.getValueAt(selectedRow, 0);
-                String novoNome = nomeField.getText();
-                String novoTelefone = telefoneField.getText();
-                String novoEmail = emailField.getText();
+                String novoNome = nomeField.getText().trim();
+                String novoTelefone = telefoneField.getText().trim();
+                String novoEmail = emailField.getText().trim();
 
                 String cpfAtual = (String) tableModel.getValueAt(selectedRow, 2);
                 if (!cpfAtual.equals(cpfField.getText().trim())) {
@@ -212,7 +196,7 @@ public class ClienteApp extends JFrame {
 
                 Cliente clienteSelecionado = clienteControle.buscarClientePorId(id);
                 if (clienteSelecionado != null) {
-                    clienteControle.editarCliente(clienteSelecionado, novoNome, novoTelefone, novoEmail);
+                    clienteControle.editarCliente(id, novoNome, novoTelefone, novoEmail);
                     atualizarTabela();
                     limparCampos();
                 }
@@ -240,7 +224,7 @@ public class ClienteApp extends JFrame {
     private class ListarActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            atualizarTabela(); // Atualiza a tabela para listar todos os clientes
+            atualizarTabela(); 
         }
     }
 
@@ -249,10 +233,17 @@ public class ClienteApp extends JFrame {
         public void actionPerformed(ActionEvent e) {
             String nomePesquisa = pesquisaField.getText().trim();
             if (!nomePesquisa.isEmpty()) {
-                tableModel.setRowCount(0); // Limpa a tabela antes de pesquisar
-                for (Cliente cliente : clienteControle.pesquisarClientesPorNome(nomePesquisa)) {
-                    tableModel.addRow(new Object[]{cliente.getId(), cliente.getNome(), cliente.getCpf(), cliente.getTelefone(), cliente.getEmail()});
+                List<Cliente> clientesFiltrados = clienteControle.pesquisarClientesPorNome(nomePesquisa);
+                tableModel.setRowCount(0); // Limpa a tabela
+                if (clientesFiltrados.isEmpty()) {
+                    JOptionPane.showMessageDialog(ClienteApp.this, "Nenhum cliente encontrado com o nome: " + nomePesquisa, "Resultado da Pesquisa", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    for (Cliente cliente : clientesFiltrados) {
+                        tableModel.addRow(new Object[]{cliente.getId(), cliente.getNome(), cliente.getCpf(), cliente.getTelefone(), cliente.getEmail()});
+                    }
                 }
+            } else {
+                atualizarTabela(); // Se a pesquisa estiver vazia, atualiza para mostrar todos os clientes
             }
         }
     }
@@ -279,7 +270,6 @@ public class ClienteApp extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(ClienteApp::new); // Executa a aplicação na thread do Swing
+        SwingUtilities.invokeLater(ClienteApp::new); 
     }
 }
-
