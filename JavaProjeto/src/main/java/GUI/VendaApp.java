@@ -4,15 +4,13 @@ import Controle.ClienteControle;
 import Controle.VendaControle;
 import Classes.Cliente;
 import Classes.Venda;
-import DAO.VendaDAO; // Importa a classe VendaDAO
+import DAO.VendaDAO;
 import Enums.Parcelas;
 import Enums.TipoPagamento;
 import Enums.Unidade;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.ParseException;
 import javax.swing.text.MaskFormatter;
 import java.time.LocalDate;
@@ -23,7 +21,7 @@ public class VendaApp extends JFrame {
     private final ClienteControle clienteControle;
     private JTextField txtIdCliente, txtNome, txtCpf, txtTelefone, txtEmail;
     private JTextField txtMaterial, txtQuantidade, txtPreco;
-    private JFormattedTextField txtDataVenda;
+    private JFormattedTextField txtDataVenda, txtDataInicial, txtDataFinal;
     private JComboBox<TipoPagamento> cbPagamento;
     private JComboBox<Parcelas> cbParcelas;
     private JComboBox<Unidade> cbUnidade;
@@ -64,6 +62,9 @@ public class VendaApp extends JFrame {
         gbc.gridy = 3;
         painelFormulario.add(btnCadastrar, gbc);
 
+        // Painel de filtros de data
+        JPanel painelFiltroData = criarPainelFiltroData(gbc, painelFormulario);
+
         tabelaVendas = new JTable();
         atualizarTabela();
         add(new JScrollPane(tabelaVendas), BorderLayout.CENTER);
@@ -76,6 +77,10 @@ public class VendaApp extends JFrame {
         JButton btnFiltrarCliente = new JButton("Filtrar por ID Cliente");
         btnFiltrarCliente.addActionListener(e -> filtrarVendasPorIdCliente());
         painelAcoes.add(btnFiltrarCliente);
+
+        JButton btnListarVendas = new JButton("Listar Vendas");
+        btnListarVendas.addActionListener(e -> listarVendas());
+        painelAcoes.add(btnListarVendas);
 
         JButton btnRemover = new JButton("Remover");
         btnRemover.addActionListener(e -> removerVenda());
@@ -172,6 +177,27 @@ public class VendaApp extends JFrame {
         return painelVenda;
     }
 
+    private JPanel criarPainelFiltroData(GridBagConstraints gbc, JPanel painelFormulario) {
+        JPanel painelFiltroData = new JPanel();
+        painelFiltroData.setBorder(BorderFactory.createTitledBorder("Filtro de Data"));
+        painelFiltroData.setLayout(new GridLayout(3, 2, 5, 5));
+
+        painelFiltroData.add(new JLabel("Data Inicial:"));
+        txtDataInicial = criarCampoDataVenda();
+        painelFiltroData.add(txtDataInicial);
+
+        painelFiltroData.add(new JLabel("Data Final:"));
+        txtDataFinal = criarCampoDataVenda();
+        painelFiltroData.add(txtDataFinal);
+
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        painelFormulario.add(painelFiltroData, gbc);
+
+        return painelFiltroData;
+    }
+
     private JFormattedTextField criarCampoDataVenda() {
         try {
             MaskFormatter formatoData = new MaskFormatter("##/##/####");
@@ -233,10 +259,8 @@ public class VendaApp extends JFrame {
             } else {
                 JOptionPane.showMessageDialog(this, "Cliente não encontrado!", "Erro", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (IllegalArgumentException e) {
-            JOptionPane.showMessageDialog(this, "Erro: Unidade inválida!", "Erro", JOptionPane.ERROR_MESSAGE);
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Erro ao cadastrar a venda: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao cadastrar venda: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -244,88 +268,88 @@ public class VendaApp extends JFrame {
         List<Venda> vendas = vendaControle.listarVendas();
         String[] colunas = {"ID", "ID Cliente", "Material", "Quantidade", "Unidade", "Preço", "Data", "Pagamento", "Parcelas"};
         DefaultTableModel modelo = new DefaultTableModel(colunas, 0);
-
         for (Venda venda : vendas) {
-            Object[] linha = {
-                venda.getId(),
-                venda.getIdCliente(),
-                venda.getMaterial(),
-                venda.getQuantidade(),
-                venda.getUnidade(),
-                vendaControle.formatarParaReais(venda.getPreco()),
-                venda.getDataVenda(),
-                venda.getTipoPagamento(),
-                venda.getParcelas()
-            };
-            modelo.addRow(linha);
+            modelo.addRow(new Object[]{
+                    venda.getId(),
+                    venda.getIdCliente(),
+                    venda.getMaterial(),
+                    venda.getQuantidade(),
+                    venda.getUnidade(),
+                    vendaControle.formatarParaReais(venda.getPreco()), // Formata o preço
+                    venda.getDataVenda(),
+                    venda.getTipoPagamento(),
+                    venda.getParcelas()
+            });
         }
-
         tabelaVendas.setModel(modelo);
     }
 
     private void filtrarVendasPorData() {
-        String dataStr = JOptionPane.showInputDialog(this, "Informe a data para filtrar (dd/MM/yyyy):");
-        if (dataStr != null) {
-            try {
-                LocalDate dataVenda = LocalDate.parse(dataStr, java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                List<Venda> vendasFiltradas = vendaControle.filtrarVendasPorData(dataVenda);
-                atualizarTabela(vendasFiltradas);
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Data inválida!", "Erro", JOptionPane.ERROR_MESSAGE);
-            }
+        try {
+            String dataInicialStr = txtDataInicial.getText();
+            String dataFinalStr = txtDataFinal.getText();
+            LocalDate dataInicial = LocalDate.parse(dataInicialStr, java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            LocalDate dataFinal = LocalDate.parse(dataFinalStr, java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
+            List<Venda> vendasFiltradas = vendaControle.filtrarVendasPorData(dataInicial, dataFinal);
+            atualizarTabelaComVendasFiltradas(vendasFiltradas);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao filtrar vendas: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void filtrarVendasPorIdCliente() {
-        String idClienteStr = JOptionPane.showInputDialog(this, "Informe o ID do Cliente para filtrar:");
-        if (idClienteStr != null) {
-            try {
-                int idCliente = Integer.parseInt(idClienteStr);
-                List<Venda> vendasFiltradas = vendaControle.filtrarVendasPorIdCliente(idCliente);
-                atualizarTabela(vendasFiltradas);
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "ID do Cliente inválido!", "Erro", JOptionPane.ERROR_MESSAGE);
-            }
+    private void atualizarTabelaComVendasFiltradas(List<Venda> vendas) {
+        if (vendas.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Nenhuma venda encontrada para o filtro especificado.", "Erro", JOptionPane.ERROR_MESSAGE);
         }
-    }
-
-    private void atualizarTabela(List<Venda> vendas) {
         String[] colunas = {"ID", "ID Cliente", "Material", "Quantidade", "Unidade", "Preço", "Data", "Pagamento", "Parcelas"};
         DefaultTableModel modelo = new DefaultTableModel(colunas, 0);
-
         for (Venda venda : vendas) {
-            Object[] linha = {
-                venda.getId(),
-                venda.getIdCliente(),
-                venda.getMaterial(),
-                venda.getQuantidade(),
-                venda.getUnidade(),
-                vendaControle.formatarParaReais(venda.getPreco()),
-                venda.getDataVenda(),
-                venda.getTipoPagamento(),
-                venda.getParcelas()
-            };
-            modelo.addRow(linha);
+            modelo.addRow(new Object[]{
+                    venda.getId(),
+                    venda.getIdCliente(),
+                    venda.getMaterial(),
+                    venda.getQuantidade(),
+                    venda.getUnidade(),
+                    vendaControle.formatarParaReais(venda.getPreco()), // Formata o preço
+                    venda.getDataVenda(),
+                    venda.getTipoPagamento(),
+                    venda.getParcelas()
+            });
         }
-
         tabelaVendas.setModel(modelo);
     }
 
-    private void removerVenda() {
-        String idVendaStr = JOptionPane.showInputDialog(this, "Informe o ID da Venda para remover:");
-        if (idVendaStr != null) {
-            try {
-                int idVenda = Integer.parseInt(idVendaStr);
-                boolean removida = vendaControle.removerVenda(idVenda);
-                if (removida) {
-                    JOptionPane.showMessageDialog(this, "Venda removida com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-                    atualizarTabela();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Venda não encontrada!", "Erro", JOptionPane.ERROR_MESSAGE);
-                }
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "ID da Venda inválido!", "Erro", JOptionPane.ERROR_MESSAGE);
+    private void filtrarVendasPorIdCliente() {
+        try {
+            int idCliente = Integer.parseInt(JOptionPane.showInputDialog("Digite o ID do Cliente:"));
+            List<Venda> vendasFiltradas = vendaControle.filtrarVendasPorIdCliente(idCliente);
+            if (vendasFiltradas.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Nenhuma venda encontrada para o ID informado.", "Erro", JOptionPane.ERROR_MESSAGE);
+            } else {
+                atualizarTabelaComVendasFiltradas(vendasFiltradas);
             }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "ID inválido!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void listarVendas() {
+        atualizarTabela();  // Atualiza a tabela com todas as vendas
+    }
+
+    private void removerVenda() {
+        int linhaSelecionada = tabelaVendas.getSelectedRow();
+        if (linhaSelecionada != -1) {
+            int idVenda = (int) tabelaVendas.getValueAt(linhaSelecionada, 0);
+            vendaControle.removerVenda(idVenda);
+            atualizarTabela();
+        } else {
+            JOptionPane.showMessageDialog(this, "Selecione uma venda para remover!", "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new VendaApp(new ClienteControle()).setVisible(true));
     }
 }
