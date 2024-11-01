@@ -4,10 +4,10 @@ import Controle.ClienteControle;
 import Controle.VendaControle;
 import Classes.Cliente;
 import Classes.Venda;
+import DAO.VendaDAO; // Importa a classe VendaDAO
+import Enums.Parcelas;
 import Enums.TipoPagamento;
 import Enums.Unidade;
-import Enums.Parcelas;
-import DAO.VendaDAO;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -28,13 +28,12 @@ public class VendaApp extends JFrame {
     private JComboBox<Parcelas> cbParcelas;
     private JComboBox<Unidade> cbUnidade;
     private JTable tabelaVendas;
-    private JFormattedTextField txtDataFiltro; 
 
     public VendaApp(ClienteControle clienteControle) {
         this.clienteControle = clienteControle;
         VendaDAO vendaDAO = new VendaDAO();
         this.vendaControle = new VendaControle(clienteControle, vendaDAO);
-
+        
         setTitle("Cadastro de Vendas");
         setSize(800, 600);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -47,7 +46,8 @@ public class VendaApp extends JFrame {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        criarPainelCliente(gbc, painelFormulario);
+        JPanel painelCliente = criarPainelCliente(gbc, painelFormulario);
+
         JButton btnBuscarCliente = new JButton("Buscar Cliente");
         btnBuscarCliente.addActionListener(e -> buscarCliente());
         gbc.gridwidth = 1;
@@ -55,7 +55,8 @@ public class VendaApp extends JFrame {
         gbc.gridy = 1;
         painelFormulario.add(btnBuscarCliente, gbc);
 
-        criarPainelVenda(gbc, painelFormulario);
+        JPanel painelVenda = criarPainelVenda(gbc, painelFormulario);
+
         JButton btnCadastrar = new JButton("Cadastrar");
         btnCadastrar.addActionListener(e -> cadastrarVenda());
         gbc.gridwidth = 1;
@@ -63,14 +64,19 @@ public class VendaApp extends JFrame {
         gbc.gridy = 3;
         painelFormulario.add(btnCadastrar, gbc);
 
-        
-        criarPainelFiltro(gbc, painelFormulario);
-
         tabelaVendas = new JTable();
         atualizarTabela();
         add(new JScrollPane(tabelaVendas), BorderLayout.CENTER);
 
         JPanel painelAcoes = new JPanel();
+        JButton btnFiltrarData = new JButton("Filtrar por Data");
+        btnFiltrarData.addActionListener(e -> filtrarVendasPorData());
+        painelAcoes.add(btnFiltrarData);
+
+        JButton btnFiltrarCliente = new JButton("Filtrar por ID Cliente");
+        btnFiltrarCliente.addActionListener(e -> filtrarVendasPorIdCliente());
+        painelAcoes.add(btnFiltrarCliente);
+
         JButton btnRemover = new JButton("Remover");
         btnRemover.addActionListener(e -> removerVenda());
         painelAcoes.add(btnRemover);
@@ -86,7 +92,7 @@ public class VendaApp extends JFrame {
         add(painelAcoes, BorderLayout.SOUTH);
     }
 
-    private void criarPainelCliente(GridBagConstraints gbc, JPanel painelFormulario) {
+    private JPanel criarPainelCliente(GridBagConstraints gbc, JPanel painelFormulario) {
         JPanel painelCliente = new JPanel();
         painelCliente.setBorder(BorderFactory.createTitledBorder("Dados do Cliente"));
         painelCliente.setLayout(new GridLayout(5, 2, 5, 5));
@@ -119,9 +125,11 @@ public class VendaApp extends JFrame {
         gbc.gridy = 0;
         gbc.gridwidth = 2;
         painelFormulario.add(painelCliente, gbc);
+
+        return painelCliente;
     }
 
-    private void criarPainelVenda(GridBagConstraints gbc, JPanel painelFormulario) {
+    private JPanel criarPainelVenda(GridBagConstraints gbc, JPanel painelFormulario) {
         JPanel painelVenda = new JPanel();
         painelVenda.setBorder(BorderFactory.createTitledBorder("Dados da Venda"));
         painelVenda.setLayout(new GridLayout(7, 2, 5, 5));
@@ -160,25 +168,8 @@ public class VendaApp extends JFrame {
         gbc.gridy = 2;
         gbc.gridwidth = 2;
         painelFormulario.add(painelVenda, gbc);
-    }
 
-    private void criarPainelFiltro(GridBagConstraints gbc, JPanel painelFormulario) {
-        JPanel painelFiltro = new JPanel();
-        painelFiltro.setBorder(BorderFactory.createTitledBorder("Filtro por Data"));
-        painelFiltro.setLayout(new FlowLayout());
-
-        painelFiltro.add(new JLabel("Data:"));
-        txtDataFiltro = criarCampoDataVenda();
-        painelFiltro.add(txtDataFiltro);
-
-        JButton btnFiltrar = new JButton("Filtrar");
-        btnFiltrar.addActionListener(e -> filtrarVendasPorData());
-        painelFiltro.add(btnFiltrar);
-
-        gbc.gridx = 0;
-        gbc.gridy = 4; 
-        gbc.gridwidth = 2;
-        painelFormulario.add(painelFiltro, gbc);
+        return painelVenda;
     }
 
     private JFormattedTextField criarCampoDataVenda() {
@@ -242,8 +233,6 @@ public class VendaApp extends JFrame {
             } else {
                 JOptionPane.showMessageDialog(this, "Cliente não encontrado!", "Erro", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Erro: Verifique se todos os campos numéricos estão preenchidos corretamente.", "Erro", JOptionPane.ERROR_MESSAGE);
         } catch (IllegalArgumentException e) {
             JOptionPane.showMessageDialog(this, "Erro: Unidade inválida!", "Erro", JOptionPane.ERROR_MESSAGE);
         } catch (Exception ex) {
@@ -262,58 +251,81 @@ public class VendaApp extends JFrame {
                 venda.getIdCliente(),
                 venda.getMaterial(),
                 venda.getQuantidade(),
-                venda.getUnidade().getValor(), 
-                venda.getPreco(),
+                venda.getUnidade(),
+                vendaControle.formatarParaReais(venda.getPreco()),
                 venda.getDataVenda(),
-                venda.getPagamento(),
-                venda.getParcelas() != null ? venda.getParcelas().getValor() : null 
+                venda.getTipoPagamento(),
+                venda.getParcelas()
             };
             modelo.addRow(linha);
         }
+
         tabelaVendas.setModel(modelo);
     }
 
     private void filtrarVendasPorData() {
-        try {
-            String dataStr = txtDataFiltro.getText();
-            LocalDate dataFiltro = LocalDate.parse(dataStr, java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-
-            List<Venda> vendasFiltradas = vendaControle.filtrarVendasPorData(dataFiltro);
-            atualizarTabelaComVendasFiltradas(vendasFiltradas);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Erro ao filtrar vendas: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        String dataStr = JOptionPane.showInputDialog(this, "Informe a data para filtrar (dd/MM/yyyy):");
+        if (dataStr != null) {
+            try {
+                LocalDate dataVenda = LocalDate.parse(dataStr, java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                List<Venda> vendasFiltradas = vendaControle.filtrarVendasPorData(dataVenda);
+                atualizarTabela(vendasFiltradas);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Data inválida!", "Erro", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
-    private void atualizarTabelaComVendasFiltradas(List<Venda> vendasFiltradas) {
+    private void filtrarVendasPorIdCliente() {
+        String idClienteStr = JOptionPane.showInputDialog(this, "Informe o ID do Cliente para filtrar:");
+        if (idClienteStr != null) {
+            try {
+                int idCliente = Integer.parseInt(idClienteStr);
+                List<Venda> vendasFiltradas = vendaControle.filtrarVendasPorIdCliente(idCliente);
+                atualizarTabela(vendasFiltradas);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "ID do Cliente inválido!", "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void atualizarTabela(List<Venda> vendas) {
         String[] colunas = {"ID", "ID Cliente", "Material", "Quantidade", "Unidade", "Preço", "Data", "Pagamento", "Parcelas"};
         DefaultTableModel modelo = new DefaultTableModel(colunas, 0);
 
-        for (Venda venda : vendasFiltradas) {
+        for (Venda venda : vendas) {
             Object[] linha = {
                 venda.getId(),
                 venda.getIdCliente(),
                 venda.getMaterial(),
                 venda.getQuantidade(),
-                venda.getUnidade().getValor(), 
-                venda.getPreco(),
+                venda.getUnidade(),
+                vendaControle.formatarParaReais(venda.getPreco()),
                 venda.getDataVenda(),
-                venda.getPagamento(),
-                venda.getParcelas() != null ? venda.getParcelas().getValor() : null 
+                venda.getTipoPagamento(),
+                venda.getParcelas()
             };
             modelo.addRow(linha);
         }
+
         tabelaVendas.setModel(modelo);
     }
 
     private void removerVenda() {
-        int linhaSelecionada = tabelaVendas.getSelectedRow();
-        if (linhaSelecionada != -1) {
-            int idVenda = (int) tabelaVendas.getValueAt(linhaSelecionada, 0);
-            vendaControle.removerVenda(idVenda);
-            atualizarTabela();
-        } else {
-            JOptionPane.showMessageDialog(this, "Selecione uma venda para remover!", "Erro", JOptionPane.ERROR_MESSAGE);
+        String idVendaStr = JOptionPane.showInputDialog(this, "Informe o ID da Venda para remover:");
+        if (idVendaStr != null) {
+            try {
+                int idVenda = Integer.parseInt(idVendaStr);
+                boolean removida = vendaControle.removerVenda(idVenda);
+                if (removida) {
+                    JOptionPane.showMessageDialog(this, "Venda removida com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                    atualizarTabela();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Venda não encontrada!", "Erro", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "ID da Venda inválido!", "Erro", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 }

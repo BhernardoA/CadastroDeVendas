@@ -2,12 +2,14 @@ package Controle;
 
 import Classes.Cliente;
 import Classes.Venda;
-import DAO.VendaDAO; // Importa a classe VendaDAO
+import DAO.VendaDAO;
 import Enums.Parcelas;
 import Enums.TipoPagamento;
 import Enums.Unidade;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 
 public class VendaControle {
     private final VendaDAO vendaDAO; 
@@ -19,7 +21,7 @@ public class VendaControle {
         this.vendaDAO = vendaDAO;
     }
 
-    // Método para cadastrar uma venda usando o ID do cliente para preencher as informações do mesmo automaticamente
+    // Método para cadastrar uma venda
     public void cadastrarVenda(int idCliente, String material, int quantidade, Unidade unidade, double preco, TipoPagamento pagamento, Integer parcelas, LocalDate dataVenda) {
         try {
             // Buscar cliente pelo ID
@@ -28,7 +30,7 @@ public class VendaControle {
                 throw new IllegalArgumentException("Erro: Nenhum cliente encontrado com o ID fornecido.");
             }
 
-            // Validar os outros dados da venda
+            // Validar os dados da venda
             if (material == null || material.trim().isEmpty()) {
                 throw new IllegalArgumentException("Erro: O material é obrigatório.");
             }
@@ -57,13 +59,13 @@ public class VendaControle {
 
             // Cadastrar a nova venda usando o DAO
             Venda novaVenda = new Venda(0, idCliente, dataVenda, material, quantidade, unidade, preco, pagamento, tipoParcelas);
-            vendaDAO.cadastrarVenda(novaVenda); // Chama o método do DAO
+            vendaDAO.cadastrarVenda(novaVenda);
             System.out.println("Venda cadastrada com sucesso!");
 
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
         } catch (Exception e) {
-            System.out.println("Erro inesperado ao tentar cadastrar a venda.");
+            e.printStackTrace(); // Para obter mais detalhes sobre o erro
         }
     }
 
@@ -110,5 +112,11 @@ public class VendaControle {
         List<Venda> vendasFiltradas = vendaDAO.listarVendas(); // Pega todas as vendas do banco
         vendasFiltradas.removeIf(venda -> !venda.getDataVenda().isEqual(dataFiltro));
         return vendasFiltradas;
+    }
+
+    // Método para formatar o valor para "reais"
+    public String formatarParaReais(double valor) {
+        NumberFormat formato = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+        return formato.format(valor);
     }
 }

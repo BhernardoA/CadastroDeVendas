@@ -4,7 +4,6 @@ import Enums.Parcelas;
 import Enums.Unidade;
 import java.time.LocalDate;
 import Enums.TipoPagamento;
-import java.util.Date;
 
 public class Venda {
     private final int id;
@@ -30,51 +29,58 @@ public class Venda {
         this.parcelas = parcelas;
     }
 
-    public Venda(int i, int idCliente, Date dataVenda, String material, int quantidade, Unidade unidade, double preco, TipoPagamento pagamento, Parcelas parcelas) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
+    // Getter para id
     public int getId() {
         return id;
     }
 
+    // Getter para idCliente
     public int getIdCliente() {
         return idCliente;
     }
 
+    // Getter para dataVenda
     public LocalDate getDataVenda() { 
         return dataVenda; 
     }
 
+    // Getter para material
     public String getMaterial() {
         return material;
     }
 
+    // Getter para quantidade
     public int getQuantidade() {
         return quantidade;
     }
 
+    // Getter para unidade
     public Unidade getUnidade() {
         return unidade;
     }
 
+    // Getter para preco
     public double getPreco() {
         return preco;
     }
 
+    // Getter para pagamento
     public TipoPagamento getPagamento() { 
         return pagamento; 
     }
 
+    // Getter para parcelas
     public Parcelas getParcelas() {
         return parcelas;
     }
 
-    public Object getTipoPagamento() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    // Método para obter o tipo de pagamento (retorna um TipoPagamento)
+    public TipoPagamento getTipoPagamento() {
+        return this.pagamento;
     }
 
-    public Object getData() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    // Método para obter a data de venda (retorna LocalDate)
+    public LocalDate getData() {
+        return this.dataVenda;
     }
 }

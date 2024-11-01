@@ -22,7 +22,14 @@ public class VendaDAO {
             stmt.setDouble(4, venda.getPreco());
             stmt.setString(5, venda.getUnidade().getValor()); 
             stmt.setString(6, venda.getPagamento().name()); 
-            stmt.setInt(7, venda.getParcelas() != null ? venda.getParcelas().ordinal() + 1 : null); // Converte enum para int
+            
+            // Ajuste para lidar com parcelas nulas
+            if (venda.getParcelas() != null) {
+                stmt.setInt(7, venda.getParcelas().ordinal() + 1); // Converte enum para int
+            } else {
+                stmt.setNull(7, Types.INTEGER); // Define como NULL
+            }
+            
             stmt.setString(8, venda.getMaterial());
 
             int affectedRows = stmt.executeUpdate();
@@ -30,8 +37,7 @@ public class VendaDAO {
             if (affectedRows > 0) {
                 ResultSet rs = stmt.getGeneratedKeys();
                 if (rs.next()) {
-                  
-                    
+                    // Aqui você pode pegar o ID gerado, se necessário
                 }
             }
         } catch (SQLException e) {
@@ -39,30 +45,32 @@ public class VendaDAO {
         }
     }
 
-    // Método para buscar uma venda pelo ID
-    public Venda buscarVendaPorId(int id) {
-        String sql = "SELECT * FROM Venda WHERE id = ?";
+    // Método para buscar vendas por ID do cliente
+    public List<Venda> buscarVendasPorIdCliente(int idCliente) {
+        List<Venda> vendas = new ArrayList<>();
+        String sql = "SELECT * FROM Venda WHERE id_cliente = ?";
         try (Connection conn = ConexaoSQL.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
              
-            stmt.setInt(1, id);
+            stmt.setInt(1, idCliente);
             ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) {
-                return new Venda(rs.getInt("id"),
-                                 rs.getInt("id_cliente"),
-                                 rs.getDate("data_venda").toLocalDate(), // Converte Date para LocalDate
-                                 rs.getString("material"),
-                                 rs.getInt("quantidade"),
-                                 Unidade.fromString(rs.getString("unidade")), // Usando fromString
-                                 rs.getDouble("valor"),
-                                 TipoPagamento.fromString(rs.getString("tipo_pagamento")), // Usando fromString
-                                 rs.getInt("parcelas") > 0 ? Parcelas.values()[rs.getInt("parcelas") - 1] : null);
+            while (rs.next()) {
+                Venda venda = new Venda(rs.getInt("id"),
+                                        rs.getInt("id_cliente"),
+                                        rs.getDate("data_venda").toLocalDate(),
+                                        rs.getString("material"),
+                                        rs.getInt("quantidade"),
+                                        Unidade.fromString(rs.getString("unidade")), // Usando fromString
+                                        rs.getDouble("valor"),
+                                        TipoPagamento.fromString(rs.getString("tipo_pagamento")), // Usando fromString
+                                        rs.getInt("parcelas") > 0 ? Parcelas.values()[rs.getInt("parcelas") - 1] : null);
+                vendas.add(venda);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return vendas;
     }
 
     // Método para listar todas as vendas
@@ -103,7 +111,14 @@ public class VendaDAO {
             stmt.setDouble(4, venda.getPreco());
             stmt.setString(5, venda.getUnidade().getValor()); 
             stmt.setString(6, venda.getPagamento().name());
-            stmt.setInt(7, venda.getParcelas() != null ? venda.getParcelas().ordinal() + 1 : null);
+            
+            // Ajuste para lidar com parcelas nulas
+            if (venda.getParcelas() != null) {
+                stmt.setInt(7, venda.getParcelas().ordinal() + 1);
+            } else {
+                stmt.setNull(7, Types.INTEGER); // Define como NULL
+            }
+            
             stmt.setString(8, venda.getMaterial());
             stmt.setInt(9, venda.getId()); 
 
