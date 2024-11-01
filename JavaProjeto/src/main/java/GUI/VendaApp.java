@@ -66,8 +66,12 @@ public class VendaApp extends JFrame {
         JPanel painelFiltroData = criarPainelFiltroData(gbc, painelFormulario);
 
         tabelaVendas = new JTable();
-        atualizarTabela();
-        add(new JScrollPane(tabelaVendas), BorderLayout.CENTER);
+        tabelaVendas.setModel(new DefaultTableModel(new String[]{"ID", "ID Cliente", "Material", "Quantidade", "Unidade", "Preço", "Data", "Pagamento", "Parcelas"}, 0));
+        
+        JScrollPane scrollPane = new JScrollPane(tabelaVendas);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        add(scrollPane, BorderLayout.CENTER);
 
         JPanel painelAcoes = new JPanel();
         JButton btnFiltrarData = new JButton("Filtrar por Data");
