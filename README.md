@@ -63,3 +63,8 @@ Aqui está o diagrama de classes do sistema:
 ![Diagrama de Classes](https://i.imgur.com/P3epuLJ.png)
 
 ---
+## 📊 Diagrama de Caso de Uso
+Aqui está o diagrama de caso de uso do sistema:
+
+![Diagrama de Caso de Uso](https://i.imgur.com/P5MWiII.png)
+
