@@ -38,8 +38,14 @@ public class VendaApp extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
+        // Estilo da tela
+        getContentPane().setBackground(new Color(240, 240, 240)); // Cor de fundo suave
+
         JPanel painelFormulario = new JPanel();
         painelFormulario.setLayout(new GridBagLayout());
+        painelFormulario.setBackground(new Color(255, 255, 255)); // Fundo branco
+        painelFormulario.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -48,6 +54,7 @@ public class VendaApp extends JFrame {
 
         JButton btnBuscarCliente = new JButton("Buscar Cliente");
         btnBuscarCliente.addActionListener(e -> buscarCliente());
+        styleButton(btnBuscarCliente);
         gbc.gridwidth = 1;
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -57,6 +64,7 @@ public class VendaApp extends JFrame {
 
         JButton btnCadastrar = new JButton("Cadastrar");
         btnCadastrar.addActionListener(e -> cadastrarVenda());
+        styleButton(btnCadastrar);
         gbc.gridwidth = 1;
         gbc.gridx = 0;
         gbc.gridy = 3;
@@ -67,27 +75,37 @@ public class VendaApp extends JFrame {
 
         tabelaVendas = new JTable();
         tabelaVendas.setModel(new DefaultTableModel(new String[]{"ID", "ID Cliente", "Material", "Quantidade", "Unidade", "Preço", "Data", "Pagamento", "Parcelas"}, 0));
-        
+        tabelaVendas.setFillsViewportHeight(true);
+        tabelaVendas.setBackground(new Color(255, 255, 255)); // Fundo da tabela branco
+        tabelaVendas.setForeground(Color.BLACK); // Cor do texto
+        tabelaVendas.setGridColor(new Color(200, 200, 200)); // Cor da grade
+
         JScrollPane scrollPane = new JScrollPane(tabelaVendas);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         add(scrollPane, BorderLayout.CENTER);
 
         JPanel painelAcoes = new JPanel();
+        painelAcoes.setBackground(new Color(255, 255, 255)); // Fundo branco
+
         JButton btnFiltrarData = new JButton("Filtrar por Data");
         btnFiltrarData.addActionListener(e -> filtrarVendasPorData());
+        styleButton(btnFiltrarData);
         painelAcoes.add(btnFiltrarData);
 
         JButton btnFiltrarCliente = new JButton("Filtrar por ID Cliente");
         btnFiltrarCliente.addActionListener(e -> filtrarVendasPorIdCliente());
+        styleButton(btnFiltrarCliente);
         painelAcoes.add(btnFiltrarCliente);
 
         JButton btnListarVendas = new JButton("Listar Vendas");
         btnListarVendas.addActionListener(e -> listarVendas());
+        styleButton(btnListarVendas);
         painelAcoes.add(btnListarVendas);
 
         JButton btnRemover = new JButton("Remover");
         btnRemover.addActionListener(e -> removerVenda());
+        styleButton(btnRemover);
         painelAcoes.add(btnRemover);
 
         JButton btnHome = new JButton("Home");
@@ -95,16 +113,25 @@ public class VendaApp extends JFrame {
             dispose();
             new Home().setVisible(true);
         });
+        styleButton(btnHome);
         painelAcoes.add(btnHome);
 
         add(painelFormulario, BorderLayout.NORTH);
         add(painelAcoes, BorderLayout.SOUTH);
     }
 
+    private void styleButton(JButton button) {
+        button.setBackground(new Color(30, 144, 255)); // Cor azul
+        button.setForeground(Color.WHITE); // Cor do texto
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15)); // Padding
+    }
+
     private JPanel criarPainelCliente(GridBagConstraints gbc, JPanel painelFormulario) {
         JPanel painelCliente = new JPanel();
         painelCliente.setBorder(BorderFactory.createTitledBorder("Dados do Cliente"));
         painelCliente.setLayout(new GridLayout(5, 2, 5, 5));
+        painelCliente.setBackground(new Color(255, 255, 255)); // Fundo branco
 
         painelCliente.add(new JLabel("ID do Cliente:"));
         txtIdCliente = new JTextField();
@@ -142,6 +169,7 @@ public class VendaApp extends JFrame {
         JPanel painelVenda = new JPanel();
         painelVenda.setBorder(BorderFactory.createTitledBorder("Dados da Venda"));
         painelVenda.setLayout(new GridLayout(7, 2, 5, 5));
+        painelVenda.setBackground(new Color(255, 255, 255)); // Fundo branco
 
         painelVenda.add(new JLabel("Data da Venda:"));
         txtDataVenda = criarCampoDataVenda();
@@ -185,6 +213,7 @@ public class VendaApp extends JFrame {
         JPanel painelFiltroData = new JPanel();
         painelFiltroData.setBorder(BorderFactory.createTitledBorder("Filtro de Data"));
         painelFiltroData.setLayout(new GridLayout(3, 2, 5, 5));
+        painelFiltroData.setBackground(new Color(255, 255, 255)); // Fundo branco
 
         painelFiltroData.add(new JLabel("Data Inicial:"));
         txtDataInicial = criarCampoDataVenda();

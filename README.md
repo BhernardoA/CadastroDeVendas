@@ -68,3 +68,5 @@ Aqui está o diagrama de caso de uso do sistema:
 
 ![Diagrama de Caso de Uso](https://i.imgur.com/P5MWiII.png)
 
+## Foto do grupo
+![WhatsApp Image 2024-11-11 at 09 58 07_73edded3](https://github.com/user-attachments/assets/445027e9-1cec-4a2a-8e20-a03b4fa435c3)
